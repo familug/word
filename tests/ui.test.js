@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 function createDom() {
   document.body.innerHTML = `
-    <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" />
+    <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" checked />
     <main class="app">
       <button id="new-game-btn" type="button">New Game</button>
       <button id="mode-toggle-btn" type="button">Kid</button>
@@ -41,12 +41,12 @@ describe("ui", () => {
 
     const toggle = document.querySelector("#dark-mode-toggle");
     const darkModeBtn = document.querySelector("#dark-mode-btn");
-    expect(document.documentElement.dataset.theme).toBe("light");
-    expect(darkModeBtn.textContent).toBe("🌙");
-    toggle.checked = true;
-    toggle.dispatchEvent(new Event("change"));
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(darkModeBtn.textContent).toBe("☀️");
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event("change"));
+    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(darkModeBtn.textContent).toBe("🌙");
     randomSpy.mockRestore();
   });
 

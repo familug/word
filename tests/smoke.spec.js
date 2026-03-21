@@ -146,7 +146,6 @@ test("mobile swipe selects a word by dragging finger", async ({ page }) => {
 
 test("dark mode applies to whole page", async ({ page }) => {
   await page.goto("/");
-  await page.locator('label[for="dark-mode-toggle"]').click();
 
   const theme = await page.evaluate(() => document.documentElement.dataset.theme);
   expect(theme).toBe("dark");
