@@ -109,6 +109,9 @@ button:focus-visible,
   text-transform: uppercase;
   -webkit-user-select: none;
   user-select: none;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
 }
 
 .tile.active {
