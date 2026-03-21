@@ -159,7 +159,7 @@ export function setupGame(doc = document) {
     speaker.speakWord(result.word);
     renderWordList();
     statusEl.textContent = `Great! You found ${result.word.toUpperCase()}.`;
-    if (game.isComplete()) statusEl.textContent = "Awesome! You found all words. 🌸🌼🌺 ❤️❤️ 🍦";
+    if (game.isComplete()) statusEl.textContent = "Awesome! You found all words. 🌸🌼🌺 ❤️💩 🍦";
   }
 
   gridEl.addEventListener("pointerdown", (event) => {
