@@ -77,9 +77,10 @@ describe("ui", () => {
     const { setupGame } = await import("../src/main.js");
     setupGame(document);
 
+    const firstWordBeforeMask = document.querySelector("#word-list li").dataset.word;
     document.querySelector("#mode-toggle-btn").click();
     const wordItem = document.querySelector("#word-list li");
-    expect(wordItem.textContent).toBe("*****");
+    expect(wordItem.textContent).toBe("*".repeat(firstWordBeforeMask.length));
 
     wordItem.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     expect(speak).not.toHaveBeenCalled();

@@ -54,7 +54,7 @@ export function setupGame(doc = document) {
     for (const word of game.words) {
       const item = doc.createElement("li");
       item.dataset.word = word;
-      item.textContent = isKidMode ? word.toUpperCase() : "*****";
+      item.textContent = isKidMode ? word.toUpperCase() : "*".repeat(word.length);
       if (isKidMode) {
         item.tabIndex = 0;
         item.setAttribute("role", "button");
