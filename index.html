@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kids Word Square</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" aria-label="Toggle dark mode" />
+    <main class="app">
+      <h1>Kids Word Square</h1>
+      <p class="hint">Find each word by dragging across letters.</p>
+      <section class="controls" aria-label="Game controls">
+        <button id="new-game-btn" type="button" aria-label="New game">🎲</button>
+        <button id="sound-toggle-btn" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
+        <label for="dark-mode-toggle" class="toggle-btn" aria-label="Toggle dark mode">🌙</label>
+      </section>
+      <p id="status" role="status" aria-live="polite">Find the words below.</p>
+      <ul id="word-list" aria-label="Words to find"></ul>
+      <div id="grid" class="grid" role="grid" aria-label="Letter grid"></div>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

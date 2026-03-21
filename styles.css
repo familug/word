@@ -1,0 +1,169 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #fff9e6;
+  color: #1f2937;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+:root {
+  color-scheme: light;
+}
+
+.theme-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+.hint {
+  margin-top: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #0f172a;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #0f172a;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+button:focus-visible,
+.tile:focus-visible,
+.toggle-btn:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+#word-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#word-list li {
+  background: #dbeafe;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-weight: 700;
+}
+
+#word-list li.found {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.grid {
+  display: grid;
+  gap: 0.35rem;
+  width: min(90vw, 22rem);
+  aspect-ratio: 1 / 1;
+  touch-action: none;
+}
+
+.tile {
+  border: 2px solid #64748b;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tile.active {
+  background: #fecaca;
+  border-color: #dc2626;
+}
+
+.tile.found {
+  background: #bbf7d0;
+  border-color: #16a34a;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="dark"] body {
+  background: #020617;
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] .app {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] button,
+:root[data-theme="dark"] .toggle-btn {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+:root[data-theme="dark"] #word-list li {
+  background: #1d4ed8;
+  color: #dbeafe;
+}
+
+:root[data-theme="dark"] #word-list li.found {
+  background: #14532d;
+  color: #bbf7d0;
+}
+
+:root[data-theme="dark"] .tile {
+  background: #1f2937;
+  color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+:root[data-theme="dark"] .tile.active {
+  background: #7f1d1d;
+  border-color: #f87171;
+}
+
+:root[data-theme="dark"] .tile.found {
+  background: #166534;
+  border-color: #4ade80;
+}
