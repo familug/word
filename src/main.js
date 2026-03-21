@@ -48,6 +48,16 @@ export function setupGame(doc = document) {
       const item = doc.createElement("li");
       item.dataset.word = word;
       item.textContent = word.toUpperCase();
+      item.tabIndex = 0;
+      item.setAttribute("role", "button");
+      item.setAttribute("aria-label", `Speak word ${word.toUpperCase()}`);
+      item.addEventListener("click", () => speaker.speakWord(word));
+      item.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          speaker.speakWord(word);
+        }
+      });
       if (game.foundWords.has(word)) item.classList.add("found");
       wordListEl.appendChild(item);
     }
