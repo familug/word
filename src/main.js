@@ -32,6 +32,7 @@ export function setupGame(doc = document) {
   const newGameBtn = doc.querySelector("#new-game-btn");
   const soundBtn = doc.querySelector("#sound-toggle-btn");
   const darkModeToggle = doc.querySelector("#dark-mode-toggle");
+  const darkModeBtn = doc.querySelector("#dark-mode-btn");
   if (!gridEl || !wordListEl || !statusEl || !newGameBtn || !soundBtn) {
     return null;
   }
@@ -186,7 +187,12 @@ export function setupGame(doc = document) {
 
   if (darkModeToggle) {
     const applyTheme = () => {
-      doc.documentElement.dataset.theme = darkModeToggle.checked ? "dark" : "light";
+      const isDark = darkModeToggle.checked;
+      doc.documentElement.dataset.theme = isDark ? "dark" : "light";
+      if (darkModeBtn) {
+        darkModeBtn.textContent = isDark ? "☀️" : "🌙";
+        darkModeBtn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      }
     };
     darkModeToggle.addEventListener("change", applyTheme);
     applyTheme();

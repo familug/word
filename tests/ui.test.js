@@ -6,6 +6,7 @@ function createDom() {
     <main class="app">
       <button id="new-game-btn" type="button">New Game</button>
       <button id="sound-toggle-btn" type="button" aria-pressed="true">Sound On</button>
+      <label id="dark-mode-btn" for="dark-mode-toggle" class="toggle-btn">🌙</label>
       <p id="status"></p>
       <ul id="word-list"></ul>
       <div id="grid"></div>
@@ -35,10 +36,13 @@ describe("ui", () => {
     setupGame(document);
 
     const toggle = document.querySelector("#dark-mode-toggle");
+    const darkModeBtn = document.querySelector("#dark-mode-btn");
     expect(document.documentElement.dataset.theme).toBe("light");
+    expect(darkModeBtn.textContent).toBe("🌙");
     toggle.checked = true;
     toggle.dispatchEvent(new Event("change"));
     expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(darkModeBtn.textContent).toBe("☀️");
     randomSpy.mockRestore();
   });
 });
