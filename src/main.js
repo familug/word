@@ -45,7 +45,7 @@ export function setupGame(doc = document) {
   let isKidMode = true;
 
   function updateModeButton() {
-    modeBtn.textContent = isKidMode ? "👶" : "🧑";
+    modeBtn.textContent = isKidMode ? "👶" : "💼";
     modeBtn.setAttribute("aria-label", isKidMode ? "Switch to adult mode" : "Switch to kid mode");
   }
 
