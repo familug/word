@@ -30,10 +30,11 @@ export function setupGame(doc = document) {
   const wordListEl = doc.querySelector("#word-list");
   const statusEl = doc.querySelector("#status");
   const newGameBtn = doc.querySelector("#new-game-btn");
+  const modeBtn = doc.querySelector("#mode-toggle-btn");
   const soundBtn = doc.querySelector("#sound-toggle-btn");
   const darkModeToggle = doc.querySelector("#dark-mode-toggle");
   const darkModeBtn = doc.querySelector("#dark-mode-btn");
-  if (!gridEl || !wordListEl || !statusEl || !newGameBtn || !soundBtn) {
+  if (!gridEl || !wordListEl || !statusEl || !newGameBtn || !modeBtn || !soundBtn) {
     return null;
   }
 
@@ -41,23 +42,35 @@ export function setupGame(doc = document) {
   const selection = new SelectionTracker();
   let game = null;
   let isPointerDown = false;
+  let isKidMode = true;
+
+  function updateModeButton() {
+    modeBtn.textContent = isKidMode ? "🧒" : "🧑";
+    modeBtn.setAttribute("aria-label", isKidMode ? "Switch to adult mode" : "Switch to kid mode");
+  }
 
   function renderWordList() {
     wordListEl.innerHTML = "";
     for (const word of game.words) {
       const item = doc.createElement("li");
       item.dataset.word = word;
-      item.textContent = word.toUpperCase();
-      item.tabIndex = 0;
-      item.setAttribute("role", "button");
-      item.setAttribute("aria-label", `Speak word ${word.toUpperCase()}`);
-      item.addEventListener("click", () => speaker.speakWord(word));
-      item.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          speaker.speakWord(word);
-        }
-      });
+      item.textContent = isKidMode ? word.toUpperCase() : "*****";
+      if (isKidMode) {
+        item.tabIndex = 0;
+        item.setAttribute("role", "button");
+        item.setAttribute("aria-label", `Speak word ${word.toUpperCase()}`);
+        item.addEventListener("click", () => speaker.speakWord(word));
+        item.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            speaker.speakWord(word);
+          }
+        });
+      } else {
+        item.removeAttribute("tabindex");
+        item.setAttribute("role", "listitem");
+        item.setAttribute("aria-label", "Hidden word");
+      }
       if (game.foundWords.has(word)) item.classList.add("found");
       wordListEl.appendChild(item);
     }
@@ -187,6 +200,11 @@ export function setupGame(doc = document) {
   });
 
   newGameBtn.addEventListener("click", startNewGame);
+  modeBtn.addEventListener("click", () => {
+    isKidMode = !isKidMode;
+    updateModeButton();
+    renderWordList();
+  });
   soundBtn.addEventListener("click", () => {
     const next = !speaker.isEnabled();
     speaker.setEnabled(next);
@@ -209,6 +227,7 @@ export function setupGame(doc = document) {
   }
 
   startNewGame();
+  updateModeButton();
   return { startNewGame };
 }
 

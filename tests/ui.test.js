@@ -5,6 +5,7 @@ function createDom() {
     <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" />
     <main class="app">
       <button id="new-game-btn" type="button">New Game</button>
+      <button id="mode-toggle-btn" type="button">Kid</button>
       <button id="sound-toggle-btn" type="button" aria-pressed="true">Sound On</button>
       <label id="dark-mode-btn" for="dark-mode-toggle" class="toggle-btn">🌙</label>
       <p id="status"></p>
@@ -65,6 +66,23 @@ describe("ui", () => {
     expect(cancel).toHaveBeenCalledOnce();
     expect(speak).toHaveBeenCalledOnce();
     expect(speak.mock.calls[0][0].text).toBe(word);
+    randomSpy.mockRestore();
+  });
+
+  test("adult mode masks words and disables word-click tts", async () => {
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
+    const speak = vi.fn();
+    const cancel = vi.fn();
+    globalThis.speechSynthesis = { speak, cancel };
+    const { setupGame } = await import("../src/main.js");
+    setupGame(document);
+
+    document.querySelector("#mode-toggle-btn").click();
+    const wordItem = document.querySelector("#word-list li");
+    expect(wordItem.textContent).toBe("*****");
+
+    wordItem.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(speak).not.toHaveBeenCalled();
     randomSpy.mockRestore();
   });
 });
