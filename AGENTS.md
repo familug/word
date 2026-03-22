@@ -33,12 +33,12 @@ This file captures project knowledge and working agreements for future coding se
 - Theme state is controlled through `#dark-mode-toggle` and synced to `document.documentElement.dataset.theme`.
 - HTML root may include `data-theme="dark"` on `<html>` for first-paint dark styling (no flash).
 - Word list visibility: `#word-visibility-btn` toggles showing words vs masked asterisks (`👁️` / `🙈`); list tap-to-speak is off while hidden.
-- Difficulty: `#difficulty-toggle-btn` switches word pool — kid uses first **200** entries of `WORD_BANK` but only words with length **≤ 6**; adult uses **500** entries with no extra length cap (`👶` / `💼`). Changing difficulty starts a new game.
+- Difficulty: `#difficulty-toggle-btn` switches word pool — kid uses first **200** entries of `WORD_BANK` but only words with length **≤ 6**; adult uses the **full** `WORD_BANK` with no extra length cap (`👶` / `💼`). Changing difficulty starts a new game.
 - When all words are found, the letter grid gets `grid--locked` (no further interaction) until **New game**.
 
 ## Vocabulary
 
-- `src/wordBank.js` exports `WORD_BANK` (500 words), `getWordPool(isKidDifficulty)`, and pool size constants.
+- `src/wordBank.js` exports `WORD_BANK`, `getWordPool(isKidDifficulty)`, and pool size constants (`ADULT_POOL_SIZE` matches bank length). Extra Oxford 3000 A1 lemmas were merged via `scripts/merge-oxford-a1-into-word-bank.mjs` (skips phrases, stopwords, duplicates).
 
 ## Completion audio
 

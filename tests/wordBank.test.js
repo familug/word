@@ -8,12 +8,13 @@ import {
 } from "../src/wordBank.js";
 
 describe("wordBank", () => {
-  test("has 500 words; kid pool is subset of first 200 with max word length", () => {
+  test("adult pool uses full bank; kid pool is subset of first 200 with max word length", () => {
     expect(WORD_BANK.length).toBe(ADULT_POOL_SIZE);
     expect(KID_POOL_SIZE).toBe(200);
     const kid = getWordPool(true);
     expect(kid.length).toBeGreaterThanOrEqual(4);
     expect(kid.every((w) => w.length <= KID_MAX_WORD_LENGTH && w.length >= 2)).toBe(true);
-    expect(getWordPool(false).length).toBe(500);
+    expect(getWordPool(false).length).toBe(WORD_BANK.length);
+    expect(new Set(WORD_BANK).size).toBe(WORD_BANK.length);
   });
 });
