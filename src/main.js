@@ -1,20 +1,9 @@
 import { createGame } from "./game.js";
 import { SelectionTracker } from "./selection.js";
 import { createSpeaker } from "./tts.js";
+import { getWordPool } from "./wordBank.js";
 
 const WORDS_PER_GAME = 4;
-const KIDS_FIRST_100_WORDS = [
-  "apple", "banana", "orange", "grape", "mango", "peach", "lemon", "melon", "berry", "pear",
-  "cat", "dog", "bird", "fish", "frog", "duck", "lion", "tiger", "zebra", "horse",
-  "cow", "goat", "sheep", "mouse", "rabbit", "monkey", "panda", "koala", "whale", "shark",
-  "red", "blue", "green", "yellow", "gold", "purple", "pink", "brown", "black", "white",
-  "sun", "moon", "star", "cloud", "rain", "snow", "wind", "storm", "sky", "light",
-  "book", "pen", "pencil", "paper", "chair", "table", "clock", "phone", "bag", "shoe",
-  "shirt", "pants", "socks", "hat", "coat", "dress", "bed", "door", "window", "house",
-  "car", "bus", "train", "plane", "boat", "bike", "road", "park", "school", "store",
-  "happy", "sad", "angry", "smile", "laugh", "jump", "run", "walk", "dance", "sing",
-  "yes", "no", "hello", "thank", "please", "sorry", "water", "milk", "bread", "rice"
-];
 
 function pickRandomWords(sourceWords, count) {
   const pool = [...sourceWords];
@@ -30,11 +19,12 @@ export function setupGame(doc = document) {
   const wordListEl = doc.querySelector("#word-list");
   const statusEl = doc.querySelector("#status");
   const newGameBtn = doc.querySelector("#new-game-btn");
-  const modeBtn = doc.querySelector("#mode-toggle-btn");
+  const visibilityBtn = doc.querySelector("#word-visibility-btn");
+  const difficultyBtn = doc.querySelector("#difficulty-toggle-btn");
   const soundBtn = doc.querySelector("#sound-toggle-btn");
   const darkModeToggle = doc.querySelector("#dark-mode-toggle");
   const darkModeBtn = doc.querySelector("#dark-mode-btn");
-  if (!gridEl || !wordListEl || !statusEl || !newGameBtn || !modeBtn || !soundBtn) {
+  if (!gridEl || !wordListEl || !statusEl || !newGameBtn || !visibilityBtn || !difficultyBtn || !soundBtn) {
     return null;
   }
 
@@ -42,11 +32,21 @@ export function setupGame(doc = document) {
   const selection = new SelectionTracker();
   let game = null;
   let isPointerDown = false;
-  let isKidMode = true;
+  let wordsVisible = true;
+  let isKidDifficulty = true;
+  let isBoardLocked = false;
 
-  function updateModeButton() {
-    modeBtn.textContent = isKidMode ? "👶" : "💼";
-    modeBtn.setAttribute("aria-label", isKidMode ? "Switch to adult mode" : "Switch to kid mode");
+  function updateVisibilityButton() {
+    visibilityBtn.textContent = wordsVisible ? "👁️" : "🙈";
+    visibilityBtn.setAttribute("aria-label", wordsVisible ? "Hide words" : "Show words");
+  }
+
+  function updateDifficultyButton() {
+    difficultyBtn.textContent = isKidDifficulty ? "👶" : "💼";
+    difficultyBtn.setAttribute(
+      "aria-label",
+      isKidDifficulty ? "Switch to adult difficulty" : "Switch to kid difficulty"
+    );
   }
 
   function renderWordList() {
@@ -54,8 +54,8 @@ export function setupGame(doc = document) {
     for (const word of game.words) {
       const item = doc.createElement("li");
       item.dataset.word = word;
-      item.textContent = isKidMode ? word.toUpperCase() : "*".repeat(word.length);
-      if (isKidMode) {
+      item.textContent = wordsVisible ? word.toUpperCase() : "*".repeat(word.length);
+      if (wordsVisible) {
         item.tabIndex = 0;
         item.setAttribute("role", "button");
         item.setAttribute("aria-label", `Speak word ${word.toUpperCase()}`);
@@ -79,6 +79,7 @@ export function setupGame(doc = document) {
   function renderGrid() {
     const { size, cells } = game.grid;
     gridEl.innerHTML = "";
+    gridEl.classList.toggle("grid--locked", isBoardLocked);
     gridEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     for (let row = 0; row < size; row += 1) {
       for (let col = 0; col < size; col += 1) {
@@ -95,7 +96,10 @@ export function setupGame(doc = document) {
   }
 
   function startNewGame() {
-    const wordSet = pickRandomWords(KIDS_FIRST_100_WORDS, WORDS_PER_GAME);
+    isBoardLocked = false;
+    gridEl.classList.remove("grid--locked");
+    const pool = getWordPool(isKidDifficulty);
+    const wordSet = pickRandomWords(pool, WORDS_PER_GAME);
     game = createGame(wordSet);
     renderGrid();
     renderWordList();
@@ -148,6 +152,7 @@ export function setupGame(doc = document) {
   }
 
   function finishSelection() {
+    if (isBoardLocked) return;
     const result = game.evaluateSelection(selection.path);
     selection.reset();
     clearActiveTiles();
@@ -156,13 +161,23 @@ export function setupGame(doc = document) {
       return;
     }
     markWordTiles(result.word);
-    speaker.speakWord(result.word);
+    const complete = game.isComplete();
+    if (complete) {
+      isBoardLocked = true;
+      gridEl.classList.add("grid--locked");
+      // Speak found word, then "congratulation" (chained; avoids cancel cutting off first).
+      speaker.speakWordThen(result.word, "congratulation");
+    } else {
+      speaker.speakWord(result.word);
+    }
     renderWordList();
-    statusEl.textContent = `Great! You found ${result.word.toUpperCase()}.`;
-    if (game.isComplete()) statusEl.textContent = "You found all words. 🌸🌼🌺 ❤️💩 🍦";
+    statusEl.textContent = complete
+      ? "You found all words. 🌸🌼🌺 ❤️💩 🍦"
+      : `Great! You found ${result.word.toUpperCase()}.`;
   }
 
   gridEl.addEventListener("pointerdown", (event) => {
+    if (isBoardLocked) return;
     const cell = getCellFromTarget(event.target);
     if (!cell) return;
     isPointerDown = true;
@@ -174,7 +189,7 @@ export function setupGame(doc = document) {
   });
 
   gridEl.addEventListener("pointermove", (event) => {
-    if (!isPointerDown) return;
+    if (isBoardLocked || !isPointerDown) return;
     const cell = getCellFromPoint(event.clientX, event.clientY) ?? getCellFromTarget(event.target);
     if (!cell) return;
     selection.dragTo(cell);
@@ -182,28 +197,33 @@ export function setupGame(doc = document) {
   });
 
   gridEl.addEventListener("pointerup", () => {
-    if (!isPointerDown) return;
+    if (isBoardLocked || !isPointerDown) return;
     isPointerDown = false;
     finishSelection();
   });
 
   gridEl.addEventListener("pointercancel", () => {
-    if (!isPointerDown) return;
+    if (isBoardLocked || !isPointerDown) return;
     isPointerDown = false;
     finishSelection();
   });
 
   gridEl.addEventListener("pointerleave", () => {
-    if (!isPointerDown) return;
+    if (isBoardLocked || !isPointerDown) return;
     isPointerDown = false;
     finishSelection();
   });
 
   newGameBtn.addEventListener("click", startNewGame);
-  modeBtn.addEventListener("click", () => {
-    isKidMode = !isKidMode;
-    updateModeButton();
+  visibilityBtn.addEventListener("click", () => {
+    wordsVisible = !wordsVisible;
+    updateVisibilityButton();
     renderWordList();
+  });
+  difficultyBtn.addEventListener("click", () => {
+    isKidDifficulty = !isKidDifficulty;
+    updateDifficultyButton();
+    startNewGame();
   });
   soundBtn.addEventListener("click", () => {
     const next = !speaker.isEnabled();
@@ -227,7 +247,8 @@ export function setupGame(doc = document) {
   }
 
   startNewGame();
-  updateModeButton();
+  updateVisibilityButton();
+  updateDifficultyButton();
   return { startNewGame };
 }
 

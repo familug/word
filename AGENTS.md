@@ -31,6 +31,18 @@ This file captures project knowledge and working agreements for future coding se
 - Controls use emoji labels.
 - Dark mode is global via `:root[data-theme="dark"]` and applies to full page, not only app container.
 - Theme state is controlled through `#dark-mode-toggle` and synced to `document.documentElement.dataset.theme`.
+- HTML root may include `data-theme="dark"` on `<html>` for first-paint dark styling (no flash).
+- Word list visibility: `#word-visibility-btn` toggles showing words vs masked asterisks (`👁️` / `🙈`); list tap-to-speak is off while hidden.
+- Difficulty: `#difficulty-toggle-btn` switches word pool size — kid uses first **200** entries of `WORD_BANK`, adult uses **500** (`👶` / `💼`). Changing difficulty starts a new game.
+- When all words are found, the letter grid gets `grid--locked` (no further interaction) until **New game**.
+
+## Vocabulary
+
+- `src/wordBank.js` exports `WORD_BANK` (500 words), `getWordPool(isKidDifficulty)`, and pool size constants.
+
+## Completion audio
+
+- After the last correct word, TTS speaks that word then **"congratulation"** via `speakWordThen` (chained utterances, not back-to-back `speakWord` with cancel).
 
 ## Testing Strategy
 

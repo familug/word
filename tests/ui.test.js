@@ -5,7 +5,8 @@ function createDom() {
     <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" checked />
     <main class="app">
       <button id="new-game-btn" type="button">New Game</button>
-      <button id="mode-toggle-btn" type="button">Kid</button>
+      <button id="word-visibility-btn" type="button">👁️</button>
+      <button id="difficulty-toggle-btn" type="button">👶</button>
       <button id="sound-toggle-btn" type="button" aria-pressed="true">Sound On</button>
       <label id="dark-mode-btn" for="dark-mode-toggle" class="toggle-btn">🌙</label>
       <p id="status"></p>
@@ -69,7 +70,7 @@ describe("ui", () => {
     randomSpy.mockRestore();
   });
 
-  test("adult mode masks words and disables word-click tts", async () => {
+  test("hiding words masks list and disables word-click tts", async () => {
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
     const speak = vi.fn();
     const cancel = vi.fn();
@@ -78,7 +79,7 @@ describe("ui", () => {
     setupGame(document);
 
     const firstWordBeforeMask = document.querySelector("#word-list li").dataset.word;
-    document.querySelector("#mode-toggle-btn").click();
+    document.querySelector("#word-visibility-btn").click();
     const wordItem = document.querySelector("#word-list li");
     expect(wordItem.textContent).toBe("*".repeat(firstWordBeforeMask.length));
 
