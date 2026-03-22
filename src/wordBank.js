@@ -53,7 +53,12 @@ export const WORD_BANK = [
   "state", "nation", "border", "passport", "visa", "journey", "voyage", "trip", "tour", "guide",
 ];
 
+/** Kid difficulty: words from the first KID_POOL_SIZE entries, at most this many letters. */
+export const KID_MAX_WORD_LENGTH = 6;
+
 export function getWordPool(isKidDifficulty) {
-  if (isKidDifficulty) return WORD_BANK.slice(0, KID_POOL_SIZE);
+  if (isKidDifficulty) {
+    return WORD_BANK.slice(0, KID_POOL_SIZE).filter((w) => w.length <= KID_MAX_WORD_LENGTH);
+  }
   return WORD_BANK.slice(0, ADULT_POOL_SIZE);
 }
