@@ -14,12 +14,15 @@
         <button id="new-game-btn" type="button" aria-label="New game">🎲</button>
         <button id="word-visibility-btn" type="button" aria-label="Hide words">👁️</button>
         <button id="difficulty-toggle-btn" type="button" aria-label="Switch to adult difficulty">👶</button>
+        <button id="timer-toggle-btn" type="button" aria-label="Show timer">⏱️</button>
         <button id="sound-toggle-btn" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
         <label id="dark-mode-btn" for="dark-mode-toggle" class="toggle-btn" aria-label="Switch to dark mode">🌙</label>
       </section>
       <p id="status" role="status" aria-live="polite">Find the words below.</p>
+      <p id="timer-display" class="timer-display is-hidden" aria-live="polite">Time: 00:00</p>
       <ul id="word-list" aria-label="Words to find"></ul>
       <div id="grid" class="grid" role="grid" aria-label="Letter grid"></div>
+      <div id="reward-strip" class="reward-strip" aria-live="polite"></div>
     </main>
     <script type="module" src="./src/main.js"></script>
   </body>
