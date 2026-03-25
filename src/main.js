@@ -263,7 +263,7 @@ export function setupGame(doc = document) {
     }
     renderWordList();
     statusEl.textContent = complete
-      ? `You found all words in ${formatElapsed(elapsedMs)}.`
+      ? "You found all words. 🌸🌼🌺 ❤️💩 🍦"
       : `Great! You found ${result.word.toUpperCase()}.`;
   }
 

@@ -164,7 +164,8 @@ describe("ui", () => {
 
     const status = document.querySelector("#status").textContent;
     const rewardIcons = document.querySelectorAll("#reward-strip .reward-icon");
-    expect(status).toContain("00:45");
+    expect(status).toBe("You found all words. 🌸🌼🌺 ❤️💩 🍦");
+    expect(document.querySelector("#timer-display").textContent).toContain("00:45");
     expect(rewardIcons).toHaveLength(20);
     expect([...rewardIcons].every((icon) => icon.textContent === "💩")).toBe(true);
     expect(document.querySelector("#timer-display").classList.contains("is-hidden")).toBe(false);
