@@ -25,7 +25,7 @@ export function setupGame(doc = document) {
   const visibilityBtn = doc.querySelector("#word-visibility-btn");
   const difficultyBtn = doc.querySelector("#difficulty-toggle-btn");
   const timerToggleBtn = doc.querySelector("#timer-toggle-btn");
-  const timerDisplayEl = doc.querySelector("#timer-display");
+  const titleClockEl = doc.querySelector("#title-clock");
   const soundBtn = doc.querySelector("#sound-toggle-btn");
   const rewardStripEl = doc.querySelector("#reward-strip");
   const darkModeToggle = doc.querySelector("#dark-mode-toggle");
@@ -38,7 +38,7 @@ export function setupGame(doc = document) {
     !visibilityBtn ||
     !difficultyBtn ||
     !timerToggleBtn ||
-    !timerDisplayEl ||
+    !titleClockEl ||
     !soundBtn ||
     !rewardStripEl
   ) {
@@ -57,6 +57,11 @@ export function setupGame(doc = document) {
   let elapsedMs = 0;
   let timerIntervalId = null;
 
+  function updateTimerButtonText() {
+    timerToggleBtn.textContent = isTimerVisible ? formatElapsed(elapsedMs) : "⏱️";
+    timerToggleBtn.setAttribute("aria-label", isTimerVisible ? `Timer: ${formatElapsed(elapsedMs)}` : "Show timer");
+  }
+
   function formatElapsed(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -64,13 +69,13 @@ export function setupGame(doc = document) {
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
 
-  function updateTimerText() {
-    timerDisplayEl.textContent = `Time: ${formatElapsed(elapsedMs)}`;
+  function hideTitleClock() {
+    titleClockEl.classList.add("is-hidden");
   }
 
-  function updateTimerVisibility() {
-    timerDisplayEl.classList.toggle("is-hidden", !isTimerVisible);
-    timerToggleBtn.setAttribute("aria-label", isTimerVisible ? "Hide timer" : "Show timer");
+  function showTitleClock() {
+    titleClockEl.textContent = formatElapsed(elapsedMs);
+    titleClockEl.classList.remove("is-hidden");
   }
 
   function stopTimer() {
@@ -80,7 +85,7 @@ export function setupGame(doc = document) {
     }
     if (timerStartMs) {
       elapsedMs = Date.now() - timerStartMs;
-      updateTimerText();
+      if (isTimerVisible) updateTimerButtonText();
     }
   }
 
@@ -88,10 +93,10 @@ export function setupGame(doc = document) {
     stopTimer();
     elapsedMs = 0;
     timerStartMs = Date.now();
-    updateTimerText();
+    if (isTimerVisible) updateTimerButtonText();
     timerIntervalId = setInterval(() => {
       elapsedMs = Date.now() - timerStartMs;
-      updateTimerText();
+      if (isTimerVisible) updateTimerButtonText();
     }, TIMER_TICK_MS);
   }
 
@@ -182,6 +187,7 @@ export function setupGame(doc = document) {
   function startNewGame() {
     isBoardLocked = false;
     gridEl.classList.remove("grid--locked");
+    hideTitleClock();
     rewardStripEl.innerHTML = "";
     const pool = getWordPool(isKidDifficulty);
     const wordSet = pickRandomWords(pool, WORDS_PER_GAME);
@@ -252,8 +258,6 @@ export function setupGame(doc = document) {
       isBoardLocked = true;
       gridEl.classList.add("grid--locked");
       stopTimer();
-      isTimerVisible = true;
-      updateTimerVisibility();
       renderRewards(elapsedMs);
       // Speak found word, then "congratulation" (chained; avoids cancel cutting off first).
       speaker.speakWordThen(result.word, "congratulation");
@@ -262,7 +266,7 @@ export function setupGame(doc = document) {
     }
     renderWordList();
     statusEl.textContent = complete
-      ? "You found all words. 🌸🌼🌺 ❤️💩 🍦"
+      ? `You found all words. 🌸🌼🌺 ⏱️ ${formatElapsed(elapsedMs)}`
       : `Great! You found ${result.word.toUpperCase()}.`;
   }
 
@@ -317,7 +321,7 @@ export function setupGame(doc = document) {
   });
   timerToggleBtn.addEventListener("click", () => {
     isTimerVisible = !isTimerVisible;
-    updateTimerVisibility();
+    updateTimerButtonText();
   });
   soundBtn.addEventListener("click", () => {
     const next = !speaker.isEnabled();
@@ -343,7 +347,7 @@ export function setupGame(doc = document) {
   startNewGame();
   updateVisibilityButton();
   updateDifficultyButton();
-  updateTimerVisibility();
+  updateTimerButtonText();
   return { startNewGame };
 }
 

@@ -4,14 +4,17 @@ function createDom() {
   document.body.innerHTML = `
     <input id="dark-mode-toggle" class="theme-toggle" type="checkbox" checked />
     <main class="app">
+      <div class="title-row">
+        <h1>Word</h1>
+      </div>
       <button id="new-game-btn" type="button">New Game</button>
-      <button id="word-visibility-btn" type="button">👁️</button>
       <button id="difficulty-toggle-btn" type="button">👶</button>
+      <button id="word-visibility-btn" type="button">👁️</button>
       <button id="timer-toggle-btn" type="button">⏱️</button>
       <button id="sound-toggle-btn" type="button" aria-pressed="true">Sound On</button>
       <label id="dark-mode-btn" for="dark-mode-toggle" class="toggle-btn">🌙</label>
+      <div id="title-clock" class="title-clock is-hidden">00:00</div>
       <p id="status"></p>
-      <p id="timer-display" class="is-hidden">Time: 00:00</p>
       <ul id="word-list"></ul>
       <div id="grid"></div>
       <div id="reward-strip"></div>
@@ -120,21 +123,28 @@ describe("ui", () => {
     vi.doUnmock("../src/wordBank.js");
   });
 
-  test("timer is hidden by default and toggles on click", async () => {
+  test("timer shows time on the button only after clicking", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-24T00:00:00.000Z"));
+
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
     const { setupGame } = await import("../src/main.js");
     setupGame(document);
 
-    const timerDisplay = document.querySelector("#timer-display");
     const timerBtn = document.querySelector("#timer-toggle-btn");
-    expect(timerDisplay.classList.contains("is-hidden")).toBe(true);
+    expect(timerBtn.textContent).toBe("⏱️");
 
     timerBtn.click();
-    expect(timerDisplay.classList.contains("is-hidden")).toBe(false);
+    expect(timerBtn.textContent).toBe("00:00");
+
+    vi.advanceTimersByTime(1000);
+    expect(timerBtn.textContent).toBe("00:01");
 
     timerBtn.click();
-    expect(timerDisplay.classList.contains("is-hidden")).toBe(true);
+    expect(timerBtn.textContent).toBe("⏱️");
+
     randomSpy.mockRestore();
+    vi.useRealTimers();
   });
 
   test("completion shows elapsed time and under-one-minute rewards", async () => {
@@ -164,11 +174,12 @@ describe("ui", () => {
 
     const status = document.querySelector("#status").textContent;
     const rewardIcons = document.querySelectorAll("#reward-strip .reward-icon");
-    expect(status).toBe("You found all words. 🌸🌼🌺 ❤️💩 🍦");
-    expect(document.querySelector("#timer-display").textContent).toContain("00:45");
+    expect(status).toBe("You found all words. 🌸🌼🌺 ⏱️ 00:45");
     expect(rewardIcons).toHaveLength(21);
     expect([...rewardIcons].every((icon) => icon.textContent === "💩")).toBe(true);
-    expect(document.querySelector("#timer-display").classList.contains("is-hidden")).toBe(false);
+
+    const titleClock = document.querySelector("#title-clock");
+    expect(titleClock.classList.contains("is-hidden")).toBe(true);
 
     vi.doUnmock("../src/game.js");
     vi.useRealTimers();
@@ -197,11 +208,14 @@ describe("ui", () => {
 
     const tile = document.querySelector(".tile");
     tile.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    document.querySelector("#grid").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    tile.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
 
     const rewardIcons = document.querySelectorAll("#reward-strip .reward-icon");
     expect(rewardIcons).toHaveLength(21);
     expect([...rewardIcons].every((icon) => icon.textContent === "🍦")).toBe(true);
+
+    const status = document.querySelector("#status").textContent;
+    expect(status).toBe("You found all words. 🌸🌼🌺 ⏱️ 01:15");
 
     vi.doUnmock("../src/game.js");
     vi.useRealTimers();
@@ -230,12 +244,15 @@ describe("ui", () => {
 
     const tile = document.querySelector(".tile");
     tile.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    document.querySelector("#grid").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    tile.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
 
     const rewardIcons = [...document.querySelectorAll("#reward-strip .reward-icon")].map((n) => n.textContent);
     expect(rewardIcons).toHaveLength(21);
     expect(rewardIcons.filter((icon) => icon === "🥦")).toHaveLength(11);
     expect(rewardIcons.filter((icon) => icon === "🍦")).toHaveLength(10);
+
+    const status = document.querySelector("#status").textContent;
+    expect(status).toBe("You found all words. 🌸🌼🌺 ⏱️ 02:10");
 
     vi.doUnmock("../src/game.js");
     vi.useRealTimers();

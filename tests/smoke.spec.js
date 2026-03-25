@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("loads game and shows tiles", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("h1")).toHaveText("Kids Word Square");
+  await expect(page.locator("h1")).toHaveText("Word");
   await expect(page.locator("#new-game-btn")).toBeVisible();
   await expect(page.locator("#sound-toggle-btn")).toBeVisible();
   await expect(page.locator(".tile").first()).toBeVisible();

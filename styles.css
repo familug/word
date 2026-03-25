@@ -35,6 +35,30 @@ h1 {
   font-size: 2rem;
 }
 
+.title-row {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.title-row h1 {
+  margin: 0;
+}
+
+.title-clock {
+  font-weight: 700;
+  white-space: nowrap;
+  position: absolute;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.title-clock.is-hidden {
+  display: none;
+}
+
 .hint {
   margin-top: 0;
 }
@@ -44,6 +68,7 @@ h1 {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  position: relative; /* Anchor #title-clock to the rightmost button area */
 }
 
 button {
@@ -112,15 +137,6 @@ button:focus-visible,
   width: min(90vw, 22rem);
   aspect-ratio: 1 / 1;
   touch-action: none;
-}
-
-.timer-display {
-  margin: 0 0 0.75rem;
-  font-weight: 700;
-}
-
-.timer-display.is-hidden {
-  display: none;
 }
 
 .reward-strip {
