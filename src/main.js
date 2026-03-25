@@ -99,14 +99,13 @@ export function setupGame(doc = document) {
     rewardStripEl.innerHTML = "";
     const icons = [];
     if (durationMs < ONE_MINUTE_MS) {
-      for (let i = 0; i < 20; i += 1) icons.push("💩");
+      for (let i = 0; i < 21; i += 1) icons.push("💩");
     } else if (durationMs < TWO_MINUTES_MS) {
-      for (let i = 0; i < 20; i += 1) icons.push("🍦");
+      for (let i = 0; i < 21; i += 1) icons.push("🍦");
     } else {
-      for (let i = 0; i < 10; i += 1) {
-        icons.push("🥦");
-        icons.push("🍦");
-      }
+      // Mixed reward: 11 broccoli + 10 ice cream = 21 icons total.
+      for (let i = 0; i < 10; i += 1) icons.push("🥦", "🍦");
+      icons.push("🥦");
     }
     for (const icon of icons) {
       const span = doc.createElement("span");

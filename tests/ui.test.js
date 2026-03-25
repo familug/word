@@ -166,7 +166,7 @@ describe("ui", () => {
     const rewardIcons = document.querySelectorAll("#reward-strip .reward-icon");
     expect(status).toBe("You found all words. 🌸🌼🌺 ❤️💩 🍦");
     expect(document.querySelector("#timer-display").textContent).toContain("00:45");
-    expect(rewardIcons).toHaveLength(20);
+    expect(rewardIcons).toHaveLength(21);
     expect([...rewardIcons].every((icon) => icon.textContent === "💩")).toBe(true);
     expect(document.querySelector("#timer-display").classList.contains("is-hidden")).toBe(false);
 
@@ -200,7 +200,7 @@ describe("ui", () => {
     document.querySelector("#grid").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
 
     const rewardIcons = document.querySelectorAll("#reward-strip .reward-icon");
-    expect(rewardIcons).toHaveLength(20);
+    expect(rewardIcons).toHaveLength(21);
     expect([...rewardIcons].every((icon) => icon.textContent === "🍦")).toBe(true);
 
     vi.doUnmock("../src/game.js");
@@ -233,8 +233,8 @@ describe("ui", () => {
     document.querySelector("#grid").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
 
     const rewardIcons = [...document.querySelectorAll("#reward-strip .reward-icon")].map((n) => n.textContent);
-    expect(rewardIcons).toHaveLength(20);
-    expect(rewardIcons.filter((icon) => icon === "🥦")).toHaveLength(10);
+    expect(rewardIcons).toHaveLength(21);
+    expect(rewardIcons.filter((icon) => icon === "🥦")).toHaveLength(11);
     expect(rewardIcons.filter((icon) => icon === "🍦")).toHaveLength(10);
 
     vi.doUnmock("../src/game.js");
